@@ -1,0 +1,311 @@
+---
+title: "統模midterm"
+author: "張孟涵"
+date: "11/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(1)
+```
+
+
+### 2
+
+
+##### (a)
+
+```{r}
+set.seed(1)
+n=10000
+rolls_dice=function(n){
+X=rep(NA,n) 
+for(j in 1:n){
+  U=runif(5,0,1)
+  X[j]=sum(ceiling(6*U))
+}
+  return(X)
+}
+n=10000
+X=rolls_dice(n)
+mean(X)
+```
+
+##### (b)
+
+```{r}
+hist(X,probability = T)
+length(X[X<=11])/n
+```
+
+
+### 3
+
+#### (b)
+```{r}
+sim_3_b=function(n,s){
+X=rep(NA,n) 
+for(j in 1:n){
+  U=runif(1,0,1)
+  X[j]=-s*log((1-U)/U)
+}
+  return(X)
+}
+```
+
+#### (c)
+```{r}
+set.seed(1)
+n=10000
+s=3
+X=sim_3_b(n,s=s)
+mean(X)
+hist(X,probability = T,ylim=c(0,0.1),breaks=100)
+
+f=function(x,s){
+ exp(-x/s)/(s*(1+ exp(-x/s))^2)
+}
+x=seq(-100,100,0.01)
+lines(x,f(x,s),col="blue")
+```
+
+### 4
+
+#### (c)
+```{r}
+hypergeometric=function(rep,N,M,n){
+  X=rep(NA,rep)
+  for(i in 1:rep){
+    U=runif(1,0,1)
+    F=0
+    j=0
+    p=choose(M,0)*choose(N-M,n-0)/choose(N,n)
+    F=F+p
+    while(U>F){
+      p=(M-j)/(j+1)*(n -j)/(N - M - n + j + 1)*p
+      F=F+p
+      j=j+1
+    }
+    X[i]=j
+  }
+  return(X)
+}
+```
+
+
+#### (d)
+
+```{r}
+set.seed(1)
+rep=10000
+N=15
+M=7
+n=5
+X=hypergeometric(rep=rep,N=N,M=M,n=n)
+hist(X)
+#simulation mean
+mean(X)
+#exact
+n*M/N
+```
+
+
+
+### 5
+
+#### (a)
+```{r}
+set.seed(1)
+sim_5_a=function(n){
+  X=rep(NA,n)
+  for(i in 1:n){
+    U1=runif(1)
+    U2=runif(1)
+    if(U1<1/4){
+      X[i]=U2
+    }
+    else if(U1<3/4){
+      X[i]=(U2)^(1/4)
+    }else{
+      X[i]=(U2)^(1/5)
+    }
+  }
+  return(X)
+}
+X=sim_5_a(10000)
+hist(X,probability = T)
+f=function(x){
+  1/4+2*x^3+5/4*x^4
+}
+x=seq(0,1,0.01)
+lines(x,f(x),col="blue")
+```
+
+#### (b)
+
+```{r}
+set.seed(1)
+
+sim_5_b=function(n){
+  X=rep(NA,n)
+  for(i in 1:n){
+    U1=runif(1)
+    U2=runif(1)
+    if(U1<1/3){
+      X[i]=ceiling(log(U2)/log(1/2))
+    }
+    else if(U1<2/3){
+      X[i]=ceiling(log(U2)/log(2/3))
+    }else{
+      X[i]=ceiling(log(U2)/log(3/4))
+    }
+  }
+  return(X)
+}
+n=10000
+X=sim_5_b(n)
+hist(X,breaks=50)
+
+round(table(X)/10000,2)
+f=function(x){
+  1/3*(1/2)^x+(2)^(x-1)/(3)^(x+1)+1/3*(3)^(x-1)/4^x
+}
+x=seq(1,30,1)
+round(f(x),2)
+```
+#### (c)
+```{r}
+set.seed(1)
+sim_5_c=function(n){
+  X=rep(NA,n)
+  for(i in 1:n){
+    U1=runif(1)
+    U2=runif(1)
+    if(U1<1/3){
+      X[i]=-log(U2)/2
+    }
+    else{
+      X[i]=U2
+    }
+  }
+  return(X)
+}
+n=10000
+X=sim_5_c(n)
+hist(X,breaks=50,probability = T)
+x=seq(0,10,0.01)
+f=function(x){
+  ifelse(x<=1,(2*exp(-2*x)+2)/3,(2*exp(-2*x))/3)
+}
+lines(x,f(x),col="blue")
+```
+
+
+### 7
+
+#### (a)
+##### (i)
+```{r}
+set.seed(1)
+sim_7_a_i=function(n){
+  Y=-log(runif(n))/3+2
+  return(Y)
+}
+
+Y=sim_7_a_i(10000)
+hist(Y,probability = T)
+x=seq(2,10,0.01)
+f=function(x){
+  3*exp(-3*(x-2))
+}
+lines(x,f(x),col="blue")
+
+mean(Y)
+```
+
+##### (ii)
+```{r}
+set.seed(1)
+sim_7_a_ii=function(n){
+  Y=tan(runif(n)*3.14/2)+2
+  return(Y)
+}
+Y=sim_7_a_ii(10000)
+hist(Y,probability = T,breaks=1000,xlim=c(0,30))
+x=seq(2,100,1)
+f=function(x){
+ 2/3.14/(1+(x-2)^2)
+}
+lines(x,f(x),col="blue")
+```
+
+#### (b)
+
+```{r}
+h1=function(x){
+  1/(1+(x-2)^2)/(3)
+}
+
+h2=function(x){
+  exp(-3*(x-2))/(2/3.14)
+}
+y=seq(2,10,0.01)
+
+plot(y,h1((y)))
+plot(y,h2((y)))
+```
+
+#### (c)
+
+```{r}
+det.c1=optim(2,h1, lower = 2, upper = 10, method = "L-BFGS-B",control = list(fnscale = -1))
+det.c2=optim(2,h2, lower = 2, upper = 10, method = "L-BFGS-B",control = list(fnscale = -1))
+c1=det.c1$value
+c2=det.c2$value
+c1
+c2
+```
+
+#### (d)
+
+```{r}
+sim_7_d_i=function(n){
+  X=rep(NA,n)
+  iter=rep(NA,n)
+  for(j in 1:n){
+    U=runif(1)
+    Y=sim_7_a_i(1)
+    i=1
+    while(U>h1(Y)/c1){
+      U=runif(1)
+      Y=sim_7_a_i(1)
+      i=i+1
+    }
+    X[j]=Y
+    iter[j]=i
+  }
+  return(list(X=X,iter=iter))
+}
+```
+
+#### (e)
+
+```{r}
+set.seed(1)
+ans1=sim_7_d_i(10000)
+X1=ans1$X
+iter1=ans1$iter
+mean(iter1)
+
+approximate_k=mean(iter1)/c1
+
+f=function(x){
+  approximate_k*exp(-3*(x-2))/(1+(x-2)^2)
+}
+x=seq(2,20,0.01)
+hist(X1,probability = T,breaks=100)
+
+lines(x,f(x),col="blue")
+```
+

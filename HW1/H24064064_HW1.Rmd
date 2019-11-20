@@ -1,0 +1,113 @@
+---
+title: "統計模擬HW1"
+author: "張孟涵"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 9
+use simulation to approximate the following integrals. Compare your estimate with the exact answer if known. 
+
+$$
+  \int_0^\infty \int_0^x e^{-(x+y)} dydx =\frac12
+$$
+
+
+```{r}
+#simulation
+integral<-function(n){
+  ux<-runif(n)
+  uy<-runif(n)
+  I<-function(x,y) {ifelse(y<=x,1,0)}
+  x=(1-ux)/ux
+  y=(1-uy)/uy
+  return(mean(exp(-(x+y))*I(x,y)/ux^2/uy^2))
+}
+
+ans=integral(100000)
+ans
+
+#exact answer
+#1/2
+
+
+
+```
+
+![](https://i.imgur.com/7ScdMAP.jpg)
+
+**$\int_0^\infty \int_0^x e^{-(x+y)} dydx=\frac12 \approx$ `r ans`**
+
+
+
+
+![](https://i.imgur.com/RXXPsxu.png)
+
+#### (a)
+```{r}
+simulation_13<-function(n){
+N<-rep(NA,n)
+for(j in 1:n){
+U<-runif(100)
+multiple<-1
+for(i in 1:100){
+  multiple<-multiple*U[i]
+  if(multiple<exp(-3)){
+      N[j]<-i-1
+    break
+  }
+}
+}
+return(N)
+}
+mean=mean(simulation_13(100000))
+mean
+```
+**$E(N)$ is `r mean`**
+
+#### (b)
+
+```{r}
+N<-simulation_13(100000)
+p0<-sum(N==0)/length(N) #P(N=0)
+p1<-sum(N==1)/length(N) #P(N=1)
+p2<-sum(N==2)/length(N) #P(N=2)
+p3<-sum(N==3)/length(N) #P(N=3)
+p4<-sum(N==4)/length(N) #P(N=4)
+p5<-sum(N==5)/length(N) #P(N=5)
+p6<-sum(N==6)/length(N) #P(N=6)
+
+```
+
+$P(N =0)$ is `r p0`
+
+$P(N =1)$ is `r p1`
+
+$P(N =2)$ is `r p2`
+
+$P(N =3)$ is `r p3`
+
+$P(N =4)$ is `r p4`
+
+$P(N =5)$ is `r p5`
+
+$P(N =6)$ is `r p6`
+
+
+
+
+
+![](https://i.imgur.com/7RZrFTd.png)
+
+```{r}
+x=c(23,66,rep(NA,12))
+for(i in 3:14){
+  x[i]<-(3*x[i-1]+5*x[i-2])%%100
+}
+u=x/100
+u
+```
+**ﬁrst 14 values :   `r u`.**
